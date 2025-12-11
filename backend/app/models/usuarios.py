@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Mapped, mapped_column
+# app/models/usuarios.py
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import String, text
 import uuid
@@ -17,3 +18,12 @@ class Usuario(Base):
     contraseña_hash: Mapped[str] = mapped_column(String(200), nullable=False)
     nombre_completo: Mapped[str] = mapped_column(String(200), nullable=False)
     correo_electronico: Mapped[str | None] = mapped_column(String(200), nullable=True)
+
+    estado: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        server_default="activo"
+    )
+
+    # RELACIÓN
+    roles = relationship("UsuariosRoles", back_populates="usuario", cascade="all, delete-orphan")

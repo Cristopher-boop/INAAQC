@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -51,6 +51,41 @@ export default function App() {
             {/* Charts */}
             <Route path="/line-chart" element={<LineChart />} />
             <Route path="/bar-chart" element={<BarChart />} />
+
+            {/* Usuarios */}
+            <Route path="/usuarios/analistas" element={<UsuariosPage rol="analista" />} />
+            <Route path="/usuarios/doctores" element={<UsuariosPage rol="doctor" />} />
+            <Route path="/usuarios/ti" element={<UsuariosPage rol="TI" />} />
+
+            {/* Roles */}
+            <Route path="/roles" element={<RolesPage />} />
+
+            {/* Pacientes */}
+            <Route path="/pacientes" element={<PacientesPage />} />
+
+            {/* Archivos */}
+            <Route path="/archivos" element={<ArchivosPage />} />
+
+            {/* Tipos Observacion */}
+            <Route path="/tipos-observacion" element={<TiposObservacionPage />} />
+
+            {/* Admisiones */}
+            <Route path="/admisiones" element={<AdmisionesPage />} />
+
+            {/* OCR Crudo */}
+            <Route path="/ocr-crudo" element={<OcrPage />} />
+
+            {/* Observaciones */}
+            <Route path="/observaciones" element={<ObservacionesPage />} />
+
+            {/* Revision Observaciones */}
+            <Route path="/revision-observaciones" element={<RevisionObsPage />} />
+
+            {/* Predicción */}
+            <Route path="/prediccion" element={<PrediccionPage />} />
+
+            {/* Reportes */}
+            <Route path="/reportes" element={<ReportesPage />} />
           </Route>
 
           {/* Auth Layout */}

@@ -1,25 +1,25 @@
+# app/schemas/usuarios.py
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+import uuid
 
 class UsuarioBase(BaseModel):
     nombre_usuario: str
     nombre_completo: str
-    correo_electronico: Optional[EmailStr] = None
+    correo_electronico: EmailStr | None = None
 
 class UsuarioCreate(UsuarioBase):
     contraseña: str
+    id_rol: int  # SE AÑADE ESTO
+
+class UsuarioUpdate(UsuarioBase):
+    contraseña: str | None = None
+    id_rol: int | None = None
+    estado: str | None = None
 
 class UsuarioRead(UsuarioBase):
-    id_usuario: str
+    id_usuario: uuid.UUID
+    rol: str
+    estado: str
 
-    model_config = {
-        "from_attributes": True
-    }
-
-class UsuarioResponse(UsuarioBase):
-    id_usuario: str
-
-    model_config = {
-        "from_attributes": True
-    }
-
+    class Config:
+        orm_mode = True
