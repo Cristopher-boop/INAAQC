@@ -24,6 +24,7 @@ class PacienteUpdate(BaseModel):
 class PacienteOut(PacienteBase):
     id_paciente: UUID | None = None
     creado_en: datetime | None = None
+    estado: str | None = None   # 👈 NUEVO
 
     model_config = {
         "from_attributes": True

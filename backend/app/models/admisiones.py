@@ -1,3 +1,4 @@
+# app/models/admisiones.py
 from sqlalchemy import Column, Text, TIMESTAMP, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func

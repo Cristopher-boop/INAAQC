@@ -16,3 +16,6 @@ class Paciente(Base):
     fecha_nacimiento = Column(Date)
     sexo = Column(Text)
     creado_en = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    
+    # 🔥 NUEVO CAMPO PARA BAJA LÓGICA
+    estado = Column(Text, nullable=False, server_default="activo")

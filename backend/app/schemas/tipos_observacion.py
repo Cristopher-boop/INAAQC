@@ -1,3 +1,4 @@
+# app/schemas/tipos_observación.py
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
@@ -5,12 +6,12 @@ from pydantic import BaseModel
 class TipoObservacionBase(BaseModel):
     codigo: str | None = None
     nombre: str
-    categoria: str   # 'LAB', 'VIT', 'PUL'
+    categoria: str
     unidad_default: str | None = None
 
 
 class TipoObservacionCreate(TipoObservacionBase):
-    pass
+    estado: str | None = "activo"
 
 
 class TipoObservacionUpdate(BaseModel):
@@ -18,6 +19,7 @@ class TipoObservacionUpdate(BaseModel):
     nombre: str | None = None
     categoria: str | None = None
     unidad_default: str | None = None
+    estado: str | None = None
 
 
 class TipoObservacionRead(BaseModel):
@@ -27,6 +29,7 @@ class TipoObservacionRead(BaseModel):
     categoria: str
     unidad_default: str | None
     creado_en: datetime
+    estado: str
 
     class Config:
         from_attributes = True
