@@ -1,3 +1,4 @@
+# app/models/observaciones.py
 from sqlalchemy import Column, ForeignKey, TIMESTAMP, Numeric, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func, text
