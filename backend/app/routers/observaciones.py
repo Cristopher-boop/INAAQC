@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.exc import IntegrityError
 
 from app.schemas.observaciones import (
     ObservacionCreate, ObservacionUpdate, ObservacionOut
@@ -154,19 +155,26 @@ async def actualizar_observacion(id_observacion: str, data: ObservacionUpdate, d
     return obs
 
 @router.delete("/{id_observacion}")
-async def eliminar_observacion(id_observacion: str, db: AsyncSession = Depends(get_db)):
-
-    # Buscar si existe
+async def eliminar_observacion(
+    id_observacion: str,
+    db: AsyncSession = Depends(get_db)
+):
     result = await db.execute(
         select(Observacion).where(Observacion.id_observacion == id_observacion)
     )
-    obs = result.scalar()
+    obs = result.scalar_one_or_none()
 
     if not obs:
         raise HTTPException(status_code=404, detail="Observación no encontrada")
 
-    # Eliminar
-    await db.delete(obs)
-    await db.commit()
+    try:
+        await db.delete(obs)
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="No se puede eliminar la observación porque tiene revisiones asociadas"
+        )
 
     return {"detail": "Observación eliminada correctamente"}
