@@ -166,6 +166,12 @@ async def baja_logica_paciente(id_paciente: UUID_type, db: AsyncSession = Depend
     if not paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
+    if paciente.estado == "inactivo":
+        raise HTTPException(
+            status_code=400,
+            detail="El paciente ya se encuentra inactivo"
+        )
+
     paciente.estado = "inactivo"
     await db.commit()
     await db.refresh(paciente)
@@ -186,3 +192,27 @@ async def eliminar_paciente(id_paciente: UUID_type, db: AsyncSession = Depends(g
     await db.delete(paciente)
     await db.commit()
     return None
+
+
+# ============================================================
+# Reactivar paciente (estado → activo)
+# ============================================================
+@router.patch("/{id_paciente}/activar", response_model=PacienteOut)
+async def reactivar_paciente(id_paciente: UUID_type, db: AsyncSession = Depends(get_db)):
+    stmt = select(Paciente).where(Paciente.id_paciente == id_paciente)
+    r = await db.execute(stmt)
+    paciente = r.scalar_one_or_none()
+
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+
+    if paciente.estado == "activo":
+        raise HTTPException(
+            status_code=400,
+            detail="El paciente ya se encuentra activo"
+        )
+
+    paciente.estado = "activo"
+    await db.commit()
+    await db.refresh(paciente)
+    return paciente

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Text, TIMESTAMP, ForeignKey
+# app/models/diagnosticos_secundarios.py
+from sqlalchemy import Column, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -19,3 +20,5 @@ class DiagnosticoSecundario(Base):
     )
 
     diagnostico = Column(Text, nullable=False)
+
+    estado = Column(Text, nullable=False, server_default="activo")

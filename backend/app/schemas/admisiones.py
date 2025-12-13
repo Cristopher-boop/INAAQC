@@ -1,3 +1,4 @@
+# app/schemas/admisiones.py
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
@@ -10,13 +11,14 @@ class AdmisionBase(BaseModel):
 
 
 class AdmisionCreate(AdmisionBase):
-    pass
+    pass  # estado NO se expone
 
 
 class AdmisionUpdate(BaseModel):
     fecha_ingreso: datetime | None = None
     fecha_salida: datetime | None = None
     diagnostico_principal: str | None = None
+    # estado NO se puede cambiar
 
 
 class AdmisionRead(BaseModel):
@@ -26,6 +28,8 @@ class AdmisionRead(BaseModel):
     fecha_salida: datetime | None
     diagnostico_principal: str | None
     creado_en: datetime
+    estado: str
 
     class Config:
         from_attributes = True
+

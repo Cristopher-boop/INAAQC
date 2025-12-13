@@ -1,6 +1,6 @@
+# app/routers/diagnosticos_secundarios.py
 from pydantic import BaseModel
 from uuid import UUID
-from datetime import datetime
 
 # --- Base ---
 class DiagnosticoSecundarioBase(BaseModel):
@@ -8,18 +8,16 @@ class DiagnosticoSecundarioBase(BaseModel):
     diagnostico: str
 
 
-# --- Create ---
 class DiagnosticoSecundarioCreate(DiagnosticoSecundarioBase):
     pass
 
 
-# --- Update ---
 class DiagnosticoSecundarioUpdate(BaseModel):
     diagnostico: str | None = None
 
 
-# --- Out ---
 class DiagnosticoSecundarioOut(DiagnosticoSecundarioBase):
     id_diag_sec: UUID
+    estado: str
 
     model_config = {"from_attributes": True}

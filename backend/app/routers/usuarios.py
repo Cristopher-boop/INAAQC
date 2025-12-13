@@ -233,3 +233,47 @@ async def eliminar_usuario(user_id: str, db: AsyncSession = Depends(get_db)):
 
     await db.commit()
     return None
+
+# ============================================================
+# REACTIVAR USUARIO
+# ============================================================
+@router.patch("/{user_id}/activar", response_model=UsuarioRead)
+async def activar_usuario(user_id: str, db: AsyncSession = Depends(get_db)):
+    try:
+        uid = uuid.UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="UUID inválido")
+
+    # buscar usuario
+    q = await db.execute(select(Usuario).where(Usuario.id_usuario == uid))
+    user = q.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if user.estado == "activo":
+        raise HTTPException(
+            status_code=400,
+            detail="El usuario ya se encuentra activo"
+        )
+
+    user.estado = "activo"
+    await db.commit()
+    await db.refresh(user)
+
+    # obtener rol
+    stmt = (
+        select(Rol.nombre_rol)
+        .join(UsuariosRoles, Rol.id_rol == UsuariosRoles.id_rol)
+        .where(UsuariosRoles.id_usuario == uid)
+    )
+    rol = (await db.execute(stmt)).scalar_one()
+
+    return UsuarioRead(
+        id_usuario=user.id_usuario,
+        nombre_usuario=user.nombre_usuario,
+        nombre_completo=user.nombre_completo,
+        correo_electronico=user.correo_electronico,
+        estado=user.estado,
+        rol=rol
+    )

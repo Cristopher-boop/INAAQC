@@ -90,6 +90,12 @@ async def listar_archivos(
     if subido_en_fin:
         conditions.append(Archivo.subido_en <= subido_en_fin)
 
+    if subido_en_inicio and not subido_en_fin:
+        raise HTTPException(
+            status_code=400,
+            detail="Debe especificar la fecha de fin para el rango de subida"
+        )
+
     if conditions:
         query = query.where(and_(*conditions))
 
@@ -187,11 +193,41 @@ async def desactivar_archivo(id_archivo: str, db: AsyncSession = Depends(get_db)
     if not obj:
         raise HTTPException(404, "Archivo no encontrado")
 
+    if obj.estado == "inactivo":
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo ya se encuentra inactivo"
+        )
+
     obj.estado = "inactivo"
     await db.commit()
 
-    return {"mensaje": "Archivo desactivado"}
+    return {"mensaje": "Archivo desactivado correctamente"}
 
+
+# ---------------------------
+#   REACTIVAR ARCHIVO
+# ---------------------------
+@router.patch("/activar/{id_archivo}")
+async def activar_archivo(id_archivo: str, db: AsyncSession = Depends(get_db)):
+    q = await db.execute(
+        select(Archivo).where(Archivo.id_archivo == id_archivo)
+    )
+    obj = q.scalar_one_or_none()
+
+    if not obj:
+        raise HTTPException(404, "Archivo no encontrado")
+
+    if obj.estado == "activo":
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo ya se encuentra activo"
+        )
+
+    obj.estado = "activo"
+    await db.commit()
+
+    return {"mensaje": "Archivo reactivado correctamente"}
 
 
 # ---------------------------

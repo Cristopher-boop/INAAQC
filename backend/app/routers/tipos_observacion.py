@@ -110,8 +110,17 @@ async def update_tipo_observacion(
     if registro is None:
         raise HTTPException(404, "Tipo de observación no encontrado")
 
-    for campo, valor in data.model_dump(exclude_unset=True).items():
+    update_data = data.model_dump(exclude_unset=True)
+
+    if "estado" in update_data:
+        raise HTTPException(
+            status_code=400,
+            detail="El estado no puede modificarse desde este endpoint"
+        )
+
+    for campo, valor in update_data.items():
         setattr(registro, campo, valor)
+
 
     await db.commit()
     await db.refresh(registro)
@@ -132,7 +141,37 @@ async def baja_logica_tipo_observacion(id_tipo_obs: UUID, db: AsyncSession = Dep
     if registro is None:
         raise HTTPException(404, "Tipo de observación no encontrado")
 
+    if registro.estado == "inactivo":
+        raise HTTPException(
+            status_code=400,
+            detail="El tipo de observación ya se encuentra inactivo"
+        )
+
     registro.estado = "inactivo"
     await db.commit()
 
     return {"detail": "Tipo de observación desactivado correctamente"}
+
+# --------------------------------------------------------
+#   REACTIVAR (estado = "activo")
+# --------------------------------------------------------
+@router.patch("/{id_tipo_obs}/activar")
+async def activar_tipo_observacion(id_tipo_obs: UUID, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(TipoObservacion).where(TipoObservacion.id_tipo_obs == id_tipo_obs)
+    )
+    registro = result.scalar_one_or_none()
+
+    if registro is None:
+        raise HTTPException(404, "Tipo de observación no encontrado")
+
+    if registro.estado == "activo":
+        raise HTTPException(
+            status_code=400,
+            detail="El tipo de observación ya se encuentra activo"
+        )
+
+    registro.estado = "activo"
+    await db.commit()
+
+    return {"detail": "Tipo de observación reactivado correctamente"}
